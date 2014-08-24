@@ -1,0 +1,80 @@
+#Description - mtcars: Motor Trend Car Road Tests#
+
+by Franco Degu / Aug. 23, 2014
+
+#Executive Summary
+
+The main tasks here are related with the resolution of  two technical questions in the project; the analysis shows that the weight of the car and quarter per mile variables influence on MPG in comparison with the transmission. To do the analysis, I'm using the data extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973-74 models). 32 observations on 11 variables.
+
+#Data Processing
+
+First, we have to load the data from the library and see how the data frame is structured, so we proceed:
+
+```{r}
+     library(datasets)
+     data(mtcars)
+     str(mtcars)
+```
+
+For a better analysis we proceed to group the main variables that will be target of analysis,  it means the comparison between Miles per gallon (mpg)  and Transmission type (am):
+
+```{r}
+mpgST <- with(mtcars, data.frame(mpg, am))
+mpgST$am <- factor(mpgST$am, labels = c("Automatic", "Manual"))
+fit <- lm(mpg ~ as.integer(am), data=mpgST)
+```
+So resolving the first question: 
+
+#1) Is an automatic or manual transmission better for MPG? we have: 
+```{r}
+summary(mpgST[mpgST$am == "Automatic",])
+```
+```{r}
+summary(mpgST[mpgST$am == "Manual",])
+```
+According this first analysis, we have an average of 7.3 miles per gallon (mpg) in the manual transmission. Let´s analyze the second question to have a better understading of this situation.
+
+#2) Trying to quantify the MPG difference between automatic and manual transmissions; we have: 
+```{r}
+summary(fit)
+```
+So, again we can prove the manual transmission is optimal, due to an incremental of 7.24 miles per gallon (mpg).
+
+Now we can analyze graphically the relation between automatic and manual transmission:
+
+```{r}
+par(mfrow=c(1,2))
+with(mpgST,{
+     boxplot(mpg ~ am, 
+             ylab = "miles per gallon (MPG)")
+     plot(mpg ~ as.integer(am),
+             xlab = "Automatic (1) or Manual(2)",
+             ylab = "miles per gallon (MPG)")
+     abline(fit, col=2)
+     })
+```
+
+#APPENDIX (analysis with other main variables)
+
+analyzing the 3 major predictive variables that may impact on the outcome:
+```{r}
+analysis <- aov(mpg ~ ., data = mtcars)
+summary(analysis)
+```
+So according the mean and the value of the tablet we have as other predictive variables as the cylynders (cyl), weight(wt) and the displacement (disp). Doing a quickly analysis with the three variables in graphics,taskin main point the miles per gallon (mpg), we have:
+
+#A) Displacement (disp)
+```{r}
+boxplot(mpg ~ disp, data = mtcars, xlab = "Displacement (cu.in.)", ylab = "Miles per gallon")
+```
+
+#B) Weigth (wt)
+```{r}
+boxplot(mpg ~ wt, data = mtcars, xlab = "Weight (wt)", ylab = "Miles per gallon")
+```
+
+#C) Cylinders (cyl)
+```{r}
+boxplot(mpg ~ cyl, data = mtcars, xlab = "Cylinders (Cyl)", ylab = "Miles per gallon")
+```
+
